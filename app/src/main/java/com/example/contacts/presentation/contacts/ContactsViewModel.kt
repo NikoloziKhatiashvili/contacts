@@ -3,8 +3,7 @@ package com.example.contacts.presentation.contacts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.contacts.common.Result
-import com.example.contacts.domain.Contact
-import com.example.contacts.domain.ContactsRepository
+import com.example.contacts.domain.usecase.GetContactsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -16,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ContactsViewModel @Inject constructor(
-    private val contactsRepository: ContactsRepository
+    private val getContactsUseCase: GetContactsUseCase,
 ) : ViewModel() {
 
     private val _contactsState = MutableStateFlow<ContactsUi>(ContactsUi.Empty)
@@ -27,7 +26,7 @@ class ContactsViewModel @Inject constructor(
     fun getContacts() {
         viewModelScope.launch(Dispatchers.IO) {
             _contactsState.emit(ContactsUi.Loading())
-            when (val res = contactsRepository.getContacts()) {
+            when (val res = getContactsUseCase.getContacts()) {
                 is Result.Success -> _contactsState.emit(ContactsUi.SuccessUi(res.data))
                 is Result.Error -> _contactsState.emit(ContactsUi.ErrorUi(res.message))
                 is Result.Exception -> _contactsState.emit(ContactsUi.ErrorUi(res.e.message))
@@ -40,10 +39,10 @@ class ContactsViewModel @Inject constructor(
         searchJob?.cancel()
         searchJob = viewModelScope.launch(Dispatchers.IO) {
             delay(400)
-            when (val res = contactsRepository.getContacts()) {
+            when (val res = getContactsUseCase.getFilteredContacts(str)) {
                 is Result.Success -> {
                     _contactsState.emit(
-                        ContactsUi.SuccessUi(filterContacts(res.data, str))
+                        ContactsUi.SuccessUi(res.data)
                     )
                 }
 
@@ -52,11 +51,5 @@ class ContactsViewModel @Inject constructor(
             }
         }
     }
-
-    private fun filterContacts(data: List<Contact>, str: String) =
-        if (!str.contains("[0-9]".toRegex())) {
-            data.filter { it.name.contains(str, ignoreCase = true) }
-        } else
-            data.filter { it.number.replace("\\s".toRegex(), "").contains(str, ignoreCase = true) }
 
 }

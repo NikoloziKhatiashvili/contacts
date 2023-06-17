@@ -1,4 +1,4 @@
-package com.example.contacts.domain
+package com.example.contacts.domain.model
 
 data class Contact(
     val id: String,

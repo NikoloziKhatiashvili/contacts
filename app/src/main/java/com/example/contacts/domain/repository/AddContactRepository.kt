@@ -1,4 +1,4 @@
-package com.example.contacts.domain
+package com.example.contacts.domain.repository
 
 import android.net.Uri
 import com.example.contacts.common.Result

@@ -2,7 +2,6 @@ package com.example.contacts.presentation.contacts
 
 import android.view.View
 import android.widget.Toast
-import com.example.contacts.domain.Contact
 import com.example.contacts.presentation.contacts.adapter.ContactsAdapter
 
 interface ContactsUi {
@@ -19,19 +18,9 @@ interface ContactsUi {
         }
     }
 
-    class SuccessUi(private val list: List<Contact>) : ContactsUi {
+    class SuccessUi(private val list: List<ContactsAdapter.ListItem>) : ContactsUi {
         override fun apply(adapter: ContactsAdapter, progressBar: View) {
-            val transformedList = mutableListOf<ContactsAdapter.ListItem>()
-            var currentHeader: Char? = null
-            for (contact in list) {
-                val firstChar = contact.name.first().toUpperCase()
-                if (firstChar != currentHeader?.toUpperCase()) {
-                    transformedList.add(ContactsAdapter.ListItem.GroupItem(firstChar.toString()))
-                    currentHeader = firstChar
-                }
-                transformedList.add(ContactsAdapter.ListItem.UiContact(contact))
-            }
-            adapter.submitList(transformedList)
+            adapter.submitList(list)
             progressBar.visibility = View.GONE
         }
     }

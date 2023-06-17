@@ -1,11 +1,8 @@
 package com.example.contacts.presentation.contacts
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,9 +16,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.contacts.R
 import com.example.contacts.databinding.FragmentContactsBinding
+import com.example.contacts.presentation.common.snack
 import com.example.contacts.presentation.contacts.adapter.ContactsAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -31,7 +28,7 @@ class ContactsFragment : Fragment() {
     private var _binding: FragmentContactsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: ContactsViewModel by viewModels()
+    private val viewModel:ContactsViewModel by viewModels()
 
     private lateinit var adapter: ContactsAdapter
 
@@ -105,23 +102,9 @@ class ContactsFragment : Fragment() {
             ) {
                 showPermissionNeedsToBeGrantedDialog()
             } else {
-                showPermissionNeedsToBeGrantedSnackbar()
+                binding.root.snack(getString(R.string.permission_message_from_snackbar))
             }
         }
-    }
-
-    private fun showPermissionNeedsToBeGrantedSnackbar() {
-        Snackbar.make(
-            binding.root,
-            getString(R.string.permission_message_from_snackbar),
-            Snackbar.LENGTH_SHORT
-        ).setAction(getString(R.string.settings)) {
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            val uri =
-                Uri.fromParts(getString(R.string.package_text), requireActivity().packageName, null)
-            intent.data = uri
-            startActivity(intent)
-        }.show()
     }
 
     private fun showPermissionNeedsToBeGrantedDialog() {
@@ -130,7 +113,7 @@ class ContactsFragment : Fragment() {
         )
             .setMessage(getString(R.string.permission_req_dialog))
             .setNegativeButton(getString(R.string.deny_from_dialog)) { dialog, _ ->
-                showPermissionNeedsToBeGrantedSnackbar()
+                binding.root.snack(getString(R.string.permission_message_from_snackbar))
                 dialog.dismiss()
             }.setPositiveButton(getString(R.string.accept_from_dialog)) { d, _ ->
                 requestContactsPermission()

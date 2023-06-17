@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.contacts.databinding.ContactItemBinding
 import com.example.contacts.databinding.GroupItemBinding
-import com.example.contacts.domain.Contact
+import com.example.contacts.domain.model.Contact
 
 
 class ContactsAdapter : ListAdapter<ContactsAdapter.ListItem, RecyclerView.ViewHolder>(

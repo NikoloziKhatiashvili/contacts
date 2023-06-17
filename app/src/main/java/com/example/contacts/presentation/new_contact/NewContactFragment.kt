@@ -1,11 +1,9 @@
 package com.example.contacts.presentation.new_contact
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,8 +18,8 @@ import com.bumptech.glide.Glide
 import com.example.contacts.R
 import com.example.contacts.databinding.FragmentNewContactBinding
 import com.example.contacts.presentation.common.isValidEmail
+import com.example.contacts.presentation.common.snack
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -141,24 +139,9 @@ class NewContactFragment : Fragment() {
                 requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_DENIED
         ) {
-            showPermissionNeedsToBeGrantedSnackbar()
+            binding.root.snack(getString(R.string.permission_message_from_snackbar))
         } else {
             requestStoragePermission()
         }
     }
-
-    private fun showPermissionNeedsToBeGrantedSnackbar() {
-        Snackbar.make(
-            binding.root,
-            getString(R.string.permission_message_image),
-            Snackbar.LENGTH_SHORT
-        ).setAction(getString(R.string.settings)) {
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            val uri =
-                Uri.fromParts(getString(R.string.package_text), requireActivity().packageName, null)
-            intent.data = uri
-            startActivity(intent)
-        }.show()
-    }
-
 }
